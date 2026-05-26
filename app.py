@@ -12,7 +12,7 @@ def mensaje():
     texto = data["mensaje"]
 
     if texto.lower() == "hola":
-        respuesta = "Hola Christian"
+        respuesta = "Hola Chris"
     else:
         respuesta = "No entiendo el mensaje"
 
