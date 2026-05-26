@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Chatbot</title>
+    <title>Chatbot WhatsApp</title>
 
     <style>
 
-        body{
+        *{
             margin:0;
+            padding:0;
+            box-sizing:border-box;
             font-family: Arial, Helvetica, sans-serif;
-            background: linear-gradient(135deg,#0f172a,#1e293b);
+        }
+
+        body{
+            background:#0b141a;
             height:100vh;
             display:flex;
             justify-content:center;
@@ -18,164 +23,255 @@
         }
 
         .chat-container{
-            width:350px;
-            height:600px;
-            background:white;
-            border-radius:20px;
-            overflow:hidden;
+            width:100%;
+            max-width:400px;
+            height:100vh;
+            background:#efeae2;
             display:flex;
             flex-direction:column;
-            box-shadow:0px 10px 30px rgba(0,0,0,0.3);
         }
 
+        /* HEADER */
+
         .header{
-            background:#2563eb;
+            background:#202c33;
             color:white;
-            padding:20px;
-            text-align:center;
-            font-size:22px;
-            font-weight:bold;
+            padding:15px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            box-shadow:0 2px 5px rgba(0,0,0,0.2);
         }
+
+        .avatar{
+            width:45px;
+            height:45px;
+            border-radius:50%;
+            background:#25d366;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            font-size:22px;
+        }
+
+        .header-info h2{
+            font-size:18px;
+        }
+
+        .header-info p{
+            font-size:12px;
+            color:#b0b3b8;
+        }
+
+        /* CHAT */
 
         .chat-box{
             flex:1;
-            padding:15px;
             overflow-y:auto;
-            background:#f1f5f9;
+            padding:15px;
+            background-image:url("https://i.imgur.com/3QZQZ9M.png");
+            background-size:cover;
         }
 
         .mensaje{
-            margin:10px 0;
-            padding:12px;
-            border-radius:15px;
             max-width:75%;
+            padding:10px 12px;
+            margin-bottom:12px;
+            border-radius:10px;
+            position:relative;
             word-wrap:break-word;
+            animation:fadeIn 0.2s ease;
         }
 
         .usuario{
-            background:#2563eb;
-            color:white;
+            background:#d9fdd3;
             margin-left:auto;
+            border-top-right-radius:0;
         }
 
         .bot{
-            background:#e2e8f0;
-            color:black;
+            background:white;
+            border-top-left-radius:0;
         }
 
+        .hora{
+            display:block;
+            text-align:right;
+            font-size:11px;
+            color:gray;
+            margin-top:5px;
+        }
+
+        /* INPUT */
+
         .input-area{
-            display:flex;
+            background:#202c33;
             padding:10px;
-            border-top:1px solid #ccc;
-            background:white;
+            display:flex;
+            align-items:center;
+            gap:10px;
         }
 
         input{
             flex:1;
             padding:12px;
-            border-radius:10px;
-            border:1px solid #ccc;
+            border:none;
+            border-radius:25px;
             outline:none;
-            font-size:16px;
+            font-size:15px;
         }
 
         button{
-            margin-left:10px;
-            padding:12px 18px;
+            width:50px;
+            height:50px;
             border:none;
-            border-radius:10px;
-            background:#2563eb;
+            border-radius:50%;
+            background:#25d366;
             color:white;
-            font-size:16px;
+            font-size:20px;
             cursor:pointer;
         }
 
         button:hover{
-            background:#1d4ed8;
+            background:#20ba5a;
+        }
+
+        @keyframes fadeIn{
+            from{
+                opacity:0;
+                transform:translateY(10px);
+            }
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
         }
 
     </style>
+
 </head>
 <body>
 
-    <div class="chat-container">
+<div class="chat-container">
 
-        <div class="header">
-            🤖 Mi Chatbot
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="avatar">
+            🤖
         </div>
 
-        <div class="chat-box" id="chat-box">
-
-            <div class="mensaje bot">
-                Hola 👋
-            </div>
-
-        </div>
-
-        <div class="input-area">
-
-            <input
-                type="text"
-                id="mensaje"
-                placeholder="Escribe un mensaje..."
-                onkeypress="if(event.key==='Enter') enviarMensaje()"
-            >
-
-            <button onclick="enviarMensaje()">
-                Enviar
-            </button>
-
+        <div class="header-info">
+            <h2>Mi Chatbot</h2>
+            <p>En línea</p>
         </div>
 
     </div>
 
+    <!-- CHAT -->
+
+    <div class="chat-box" id="chat-box">
+
+        <div class="mensaje bot">
+            Hola 👋 Soy tu chatbot
+
+            <span class="hora">
+                12:00
+            </span>
+        </div>
+
+    </div>
+
+    <!-- INPUT -->
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="mensaje"
+            placeholder="Escribe un mensaje"
+            onkeypress="if(event.key==='Enter') enviarMensaje()"
+        >
+
+        <button onclick="enviarMensaje()">
+            ➤
+        </button>
+
+    </div>
+
+</div>
+
 <script>
+
+function obtenerHora(){
+
+    let fecha = new Date();
+
+    return fecha.getHours().toString().padStart(2,'0')
+        + ":"
+        + fecha.getMinutes().toString().padStart(2,'0');
+}
 
 async function enviarMensaje(){
 
     let input = document.getElementById("mensaje");
-    let mensaje = input.value;
+    let texto = input.value;
 
-    if(mensaje.trim() === ""){
+    if(texto.trim() === ""){
         return;
     }
 
     let chatBox = document.getElementById("chat-box");
 
-    // Mensaje usuario
+    // MENSAJE USUARIO
+
     let mensajeUsuario = document.createElement("div");
+
     mensajeUsuario.className = "mensaje usuario";
-    mensajeUsuario.innerText = mensaje;
+
+    mensajeUsuario.innerHTML = `
+        ${texto}
+        <span class="hora">${obtenerHora()}</span>
+    `;
 
     chatBox.appendChild(mensajeUsuario);
 
-    // Limpiar input
     input.value = "";
 
-    // Scroll abajo
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Enviar al servidor
+    // ENVIAR AL SERVIDOR
+
     let respuesta = await fetch("/mensaje",{
+
         method:"POST",
+
         headers:{
             "Content-Type":"application/json"
         },
+
         body:JSON.stringify({
-            mensaje:mensaje
+            mensaje:texto
         })
+
     });
 
     let datos = await respuesta.json();
 
-    // Respuesta bot
+    // RESPUESTA BOT
+
     let mensajeBot = document.createElement("div");
+
     mensajeBot.className = "mensaje bot";
-    mensajeBot.innerText = datos.respuesta;
+
+    mensajeBot.innerHTML = `
+        ${datos.respuesta}
+        <span class="hora">${obtenerHora()}</span>
+    `;
 
     chatBox.appendChild(mensajeBot);
 
-    // Scroll abajo
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
