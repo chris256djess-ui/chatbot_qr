@@ -142,32 +142,27 @@
 <div class="chat-container">
 
     <!-- HEADER -->
-
     <div class="header">
-
         <div class="header-info">
             <h2>Ñätho AquaGuard</h2>
         </div>
-
     </div>
 
     <!-- CHAT -->
-
     <div class="chat-box" id="chat-box">
 
+        <!-- MENSAJE DE BIENVENIDA -->
         <div class="mensaje bot">
-            !Hola, buen día!👋<br><br>Gracias por comunicarte con Ñätho AquaGuard, te atiende tu amigo Ñäthito y sera un gusto 
-            proporcionarte mi ayuda.<br><br>¿Cual es tu nombre?
+            ¡Hola, buen día!👋<br><br>
+            Gracias por comunicarte con Ñätho AquaGuard, te atiende tu amigo Ñäthito y será un gusto proporcionarte mi ayuda.<br><br>
+            ¿Cuál es tu nombre?
 
-            <span class="hora">
-                12:00
-            </span>
+            <span class="hora" id="hora-bienvenida"></span>
         </div>
 
     </div>
 
     <!-- INPUT -->
-
     <div class="input-area">
 
         <input
@@ -188,13 +183,17 @@
 <script>
 
 function obtenerHora(){
-
     let fecha = new Date();
 
     return fecha.getHours().toString().padStart(2,'0')
         + ":"
         + fecha.getMinutes().toString().padStart(2,'0');
 }
+
+// poner hora en el mensaje de bienvenida
+window.onload = function(){
+    document.getElementById("hora-bienvenida").innerText = obtenerHora();
+};
 
 async function enviarMensaje(){
 
@@ -208,9 +207,7 @@ async function enviarMensaje(){
     let chatBox = document.getElementById("chat-box");
 
     // MENSAJE USUARIO
-
     let mensajeUsuario = document.createElement("div");
-
     mensajeUsuario.className = "mensaje usuario";
 
     mensajeUsuario.innerHTML = `
@@ -221,31 +218,23 @@ async function enviarMensaje(){
     chatBox.appendChild(mensajeUsuario);
 
     input.value = "";
-
     chatBox.scrollTop = chatBox.scrollHeight;
 
     // ENVIAR AL SERVIDOR
-
     let respuesta = await fetch("/mensaje",{
-
         method:"POST",
-
         headers:{
             "Content-Type":"application/json"
         },
-
         body:JSON.stringify({
             mensaje:texto
         })
-
     });
 
     let datos = await respuesta.json();
 
     // RESPUESTA BOT
-
     let mensajeBot = document.createElement("div");
-
     mensajeBot.className = "mensaje bot";
 
     mensajeBot.innerHTML = `
