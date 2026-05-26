@@ -1,16 +1,34 @@
 from flask import Flask, render_template, request, jsonify, session
 from datetime import datetime
+import pandas as pd
+import os
 
 app = Flask(__name__)
 app.secret_key = "aquaguard_secret_key"
 
-# 📦 almacenamiento en memoria (después puedes cambiar a Excel o BD)
 reportes = []
+
+EXCEL_FILE = "reportes.xlsx"
 
 
 @app.route("/")
 def inicio():
     return render_template("index.html")
+
+
+# 📊 guardar en Excel
+def guardar_en_excel(nuevo_reporte):
+
+    df_nuevo = pd.DataFrame([nuevo_reporte])
+
+    # si el archivo ya existe, se agrega
+    if os.path.exists(EXCEL_FILE):
+        df_existente = pd.read_excel(EXCEL_FILE)
+        df_final = pd.concat([df_existente, df_nuevo], ignore_index=True)
+    else:
+        df_final = df_nuevo
+
+    df_final.to_excel(EXCEL_FILE, index=False)
 
 
 @app.route("/mensaje", methods=["POST"])
@@ -22,7 +40,6 @@ def mensaje():
 
     hora = datetime.now().strftime("%H:%M")
 
-    # inicializar sesión
     if "paso" not in session:
         session["paso"] = 0
         session["datos"] = {}
@@ -32,80 +49,80 @@ def mensaje():
 
     respuesta = ""
 
-    # =========================
-    # PASO 0 - NOMBRE (PRIMERO)
-    # =========================
+    # ======================
+    # 0 - NOMBRE
+    # ======================
     if paso == 0:
         session["datos"] = {"hora_inicio": hora}
         session["paso"] = 1
-        respuesta = "👋 Hola, ¿cuál es tu nombre?"
+        respuesta = "👋 ¿Cuál es tu nombre?"
 
-    # =========================
-    # PASO 1 - NOMBRE
-    # =========================
+    # ======================
+    # 1 - NOMBRE
+    # ======================
     elif paso == 1:
         datos["nombre"] = texto
         session["paso"] = 2
-        respuesta = "📱 Ahora escribe tu número telefónico"
+        respuesta = "📱 Escribe tu número telefónico"
 
-    # =========================
-    # PASO 2 - TELÉFONO
-    # =========================
+    # ======================
+    # 2 - TELÉFONO
+    # ======================
     elif paso == 2:
         datos["telefono"] = texto
         session["paso"] = 3
-        respuesta = "🚰 Describe el motivo del reporte con tus palabras"
+        respuesta = "🚰 Describe el motivo del reporte"
 
-    # =========================
-    # PASO 3 - MOTIVO
-    # =========================
+    # ======================
+    # 3 - MOTIVO
+    # ======================
     elif paso == 3:
         datos["motivo"] = texto
         session["paso"] = 4
         respuesta = "📍 ¿Permites usar tu ubicación GPS? (si / no)"
 
-    # =========================
-    # PASO 4 - GPS (CON PERMISO)
-    # =========================
+    # ======================
+    # 4 - GPS + GUARDADO
+    # ======================
     elif paso == 4:
 
         if "si" in texto:
-            datos["gps"] = gps  # coordenadas desde frontend
+            datos["gps"] = gps
         else:
             datos["gps"] = "No permitido"
 
         datos["hora_reporte"] = hora
 
-        # guardar reporte completo
+        # guardar en memoria
         reportes.append(datos.copy())
+
+        # 💾 guardar en Excel
+        guardar_en_excel(datos.copy())
 
         session["paso"] = 5
 
-        respuesta = "✅ Reporte guardado correctamente. ¿Deseas realizar otro? (si / no)"
+        respuesta = "✅ Reporte guardado en sistema. ¿Deseas hacer otro? (si / no)"
 
-    # =========================
-    # PASO 5 - NUEVO REPORTE
-    # =========================
+    # ======================
+    # 5 - REPETIR
+    # ======================
     elif paso == 5:
 
         if "si" in texto:
             session["paso"] = 0
             session["datos"] = {}
-            respuesta = "👍 Perfecto, iniciemos un nuevo reporte"
+            respuesta = "👍 Perfecto, iniciemos otro reporte"
         else:
             session["paso"] = 99
-            respuesta = "🙏 Gracias por usar Ñätho AquaGuard. ¡Hasta luego!"
+            respuesta = "🙏 Gracias por usar Ñätho AquaGuard"
 
-    # =========================
-    # FINAL
-    # =========================
     else:
-        respuesta = "La conversación ha finalizado. Recarga la página para empezar de nuevo."
+        respuesta = "Recarga la página para iniciar nuevamente"
 
     return jsonify({"respuesta": respuesta})
 
 
-# 📊 ver reportes (debug / admin)
+# 📊 ver reportes en JSON
 @app.route("/reportes")
 def ver_reportes():
     return jsonify(reportes)
