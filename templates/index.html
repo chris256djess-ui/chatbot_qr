@@ -218,14 +218,15 @@ async function enviarMensaje(){
     // 🔥 REGISTRO DE USUARIOS (OPCIÓN A)
     if (esperandoNombre) {
 
-        let nuevoUsuario = {
-            id: usuarios.length + 1,
-            nombre: texto
-        };
-
-        usuarios.push(nuevoUsuario);
-
-        console.log("Usuarios registrados:", usuarios);
+        fetch("/guardar_usuario", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                nombre: texto
+            })
+        });
 
         esperandoNombre = false;
 
