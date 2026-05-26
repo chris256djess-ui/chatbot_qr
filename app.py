@@ -44,14 +44,14 @@ def mensaje():
             estado_usuario = "pedir_nombre"
 
             respuesta = (
-                "¡Hola! 👋\n\n"
+                "¡Hola! 👋\n"
                 "Por favor, me puedes proporcionar tu nombre."
             )
 
         else:
 
             respuesta = (
-                "Para iniciar la conversación escribe:\n\n"
+                "Para iniciar la conversación escribe:\n"
                 "Hola"
             )
 
@@ -64,7 +64,7 @@ def mensaje():
         estado_usuario = "pedir_telefono"
 
         respuesta = (
-            f"Mucho gusto, {nombre_usuario} 😊\n\n"
+            f"Mucho gusto, {nombre_usuario} 😊\n"
             "Ahora brindame tu número telefónico."
         )
 
@@ -77,7 +77,7 @@ def mensaje():
         estado_usuario = "pedir_motivo"
 
         respuesta = (
-            "Selecciona el motivo del reporte:\n\n"
+            "Selecciona el motivo del reporte:\n"
             "• Fuga de agua\n"
             "• Perforacion en tuberias\n"
             "• Tuberia fracturadas\n"
@@ -102,9 +102,9 @@ def mensaje():
             else:
 
                 respuesta = (
-                    f"✅ Reporte generado correctamente.\n\n"
-                    f"Número de reporte: #{numero_reporte}\n\n"
-                    f"Motivo: {texto}\n\n"
+                    f"✅ Reporte generado correctamente.\n"
+                    f"Número de reporte: #{numero_reporte}\n"
+                    f"Motivo: {texto}\n"
                     "¿Deseas generar otro reporte?\n"
                     "Responde: Si o No"
                 )
@@ -116,8 +116,8 @@ def mensaje():
         else:
 
             respuesta = (
-                "Opción no válida.\n\n"
-                "Escribe una de las siguientes opciones:\n\n"
+                "Opción no válida.\n"
+                "Escribe una de las siguientes opciones:\n"
                 "• Fuga de agua\n"
                 "• Perforacion en tuberias\n"
                 "• Tuberia fracturadas\n"
@@ -132,9 +132,9 @@ def mensaje():
         explicacion = texto
 
         respuesta = (
-            f"✅ Reporte generado correctamente.\n\n"
-            f"Número de reporte: #{numero_reporte}\n\n"
-            f"Descripción: {explicacion}\n\n"
+            f"✅ Reporte generado correctamente.\n"
+            f"Número de reporte: #{numero_reporte}\n"
+            f"Descripción: {explicacion}\n"
             "¿Deseas generar otro reporte?\n"
             "Responde: Si o No"
         )
@@ -152,7 +152,7 @@ def mensaje():
             estado_usuario = "pedir_motivo"
 
             respuesta = (
-                "Selecciona el motivo del nuevo reporte:\n\n"
+                "Selecciona el motivo del nuevo reporte:\n"
                 "• Fuga de agua\n"
                 "• Perforacion en tuberias\n"
                 "• Tuberia fracturadas\n"
@@ -165,14 +165,14 @@ def mensaje():
             estado_usuario = "inicio"
 
             respuesta = (
-                "Gracias por utilizar el sistema de reportes de Ñätho AquaGuard 💧\n\n"
+                "Gracias por utilizar el sistema de reportes de Ñätho AquaGuard 💧\n"
                 "Que tengas un excelente día."
             )
 
         else:
 
             respuesta = (
-                "Por favor responde únicamente:\n\n"
+                "Por favor responde únicamente:\n"
                 "Si\n"
                 "o\n"
                 "No"
