@@ -135,12 +135,14 @@
 
 <div class="chat-container">
 
+    <!-- HEADER -->
     <div class="header">
         <div class="header-info">
             <h2>Ñätho AquaGuard</h2>
         </div>
     </div>
 
+    <!-- CHAT -->
     <div class="chat-box" id="chat-box">
 
         <div class="mensaje bot">
@@ -153,6 +155,7 @@
 
     </div>
 
+    <!-- INPUT -->
     <div class="input-area">
 
         <input
@@ -172,7 +175,7 @@
 
 <script>
 
-let nombreUsuario = "";
+let usuarios = [];
 let esperandoNombre = true;
 
 function obtenerHora(){
@@ -212,17 +215,24 @@ async function enviarMensaje(){
     input.value = "";
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // 🔥 CAPTURA DE NOMBRE (SIN RESPUESTA)
+    // 🔥 REGISTRO DE USUARIOS (OPCIÓN A)
     if (esperandoNombre) {
-        nombreUsuario = texto;
-        esperandoNombre = false;
 
-        console.log("Nombre guardado:", nombreUsuario);
+        let nuevoUsuario = {
+            id: usuarios.length + 1,
+            nombre: texto
+        };
+
+        usuarios.push(nuevoUsuario);
+
+        console.log("Usuarios registrados:", usuarios);
+
+        esperandoNombre = false;
 
         return;
     }
 
-    // 🔄 DESPUÉS DE ESTO YA IRÍA FLASK (si lo usas)
+    // 🔄 FLASK (DESPUÉS DEL NOMBRE)
     let respuesta = await fetch("/mensaje",{
         method:"POST",
         headers:{
