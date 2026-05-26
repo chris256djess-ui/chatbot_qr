@@ -157,7 +157,7 @@
 
         <div class="mensaje bot">
             !Hola, buen día!👋<br><br>Gracias por comunicarte con Ñätho AquaGuard, te atiende tu amigo Ñäthito y sera un gusto 
-            proporcionarte mi ayuda.<br><br>Por favor, indicame cual es el motivo de su reporte.📝
+            proporcionarte mi ayuda.<br><br>¿Cual es tu nombre?
 
             <span class="hora">
                 12:00
@@ -197,7 +197,7 @@ function obtenerHora(){
 }
 
 
-// 📍 GPS
+// 📍 GPS (solo se envía si backend lo solicita)
 async function obtenerGPS(){
 
     return new Promise((resolve)=>{
@@ -222,7 +222,7 @@ async function obtenerGPS(){
 }
 
 
-// 💬 MENSAJES
+// 💬 agregar mensajes
 function agregarMensaje(texto, tipo){
 
     let chatBox = document.getElementById("chat-box");
@@ -240,7 +240,7 @@ function agregarMensaje(texto, tipo){
 }
 
 
-// 🚀 ENVIAR MENSAJE
+// 🚀 enviar mensaje (FLUJO CORRECTO)
 async function enviarMensaje(){
 
     let input = document.getElementById("mensaje");
@@ -253,10 +253,10 @@ async function enviarMensaje(){
 
     input.value = "";
 
-    // 📍 GPS (solo se envía, backend decide si lo usa)
+    // 📍 IMPORTANTE:
+    // SOLO mandamos GPS si el backend lo necesita (lo decide el flujo)
     let gps = await obtenerGPS();
 
-    // enviar backend
     let respuesta = await fetch("/mensaje",{
 
         method: "POST",
@@ -277,6 +277,5 @@ async function enviarMensaje(){
 }
 
 </script>
-
 </body>
 </html>
