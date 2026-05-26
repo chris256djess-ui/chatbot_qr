@@ -192,70 +192,88 @@ function obtenerHora(){
     let fecha = new Date();
 
     return fecha.getHours().toString().padStart(2,'0')
-        + ":"
-        + fecha.getMinutes().toString().padStart(2,'0');
+        + ":" +
+        fecha.getMinutes().toString().padStart(2,'0');
 }
 
+
+// 📍 GPS
+async function obtenerGPS(){
+
+    return new Promise((resolve)=>{
+
+        if(!navigator.geolocation){
+            resolve("No soportado");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos)=>{
+                resolve({
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                });
+            },
+            ()=>{
+                resolve("Denegado");
+            }
+        );
+    });
+}
+
+
+// 💬 MENSAJES
+function agregarMensaje(texto, tipo){
+
+    let chatBox = document.getElementById("chat-box");
+
+    let div = document.createElement("div");
+    div.className = "mensaje " + tipo;
+
+    div.innerHTML = `
+        ${texto}
+        <span class="hora">${obtenerHora()}</span>
+    `;
+
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+// 🚀 ENVIAR MENSAJE
 async function enviarMensaje(){
 
     let input = document.getElementById("mensaje");
     let texto = input.value;
 
-    if(texto.trim() === ""){
-        return;
-    }
+    if(texto.trim() === "") return;
 
-    let chatBox = document.getElementById("chat-box");
-
-    // MENSAJE USUARIO
-
-    let mensajeUsuario = document.createElement("div");
-
-    mensajeUsuario.className = "mensaje usuario";
-
-    mensajeUsuario.innerHTML = `
-        ${texto}
-        <span class="hora">${obtenerHora()}</span>
-    `;
-
-    chatBox.appendChild(mensajeUsuario);
+    // mostrar usuario
+    agregarMensaje(texto, "usuario");
 
     input.value = "";
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+    // 📍 GPS (solo se envía, backend decide si lo usa)
+    let gps = await obtenerGPS();
 
-    // ENVIAR AL SERVIDOR
-
+    // enviar backend
     let respuesta = await fetch("/mensaje",{
 
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/json"
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
         },
 
-        body:JSON.stringify({
-            mensaje:texto
+        body: JSON.stringify({
+            mensaje: texto,
+            gps: gps
         })
-
     });
 
-    let datos = await respuesta.json();
+    let data = await respuesta.json();
 
-    // RESPUESTA BOT
-
-    let mensajeBot = document.createElement("div");
-
-    mensajeBot.className = "mensaje bot";
-
-    mensajeBot.innerHTML = `
-        ${datos.respuesta}
-        <span class="hora">${obtenerHora()}</span>
-    `;
-
-    chatBox.appendChild(mensajeBot);
-
-    chatBox.scrollTop = chatBox.scrollHeight;
+    // respuesta bot
+    agregarMensaje(data.respuesta, "bot");
 }
 
 </script>
