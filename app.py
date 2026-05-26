@@ -11,8 +11,8 @@ def mensaje():
     data = request.json
     texto = data["mensaje"]
 
-    if texto.lower() == "holaa":
-        respuesta = "Hola Chris"
+    if texto.lower() == "hola":
+        respuesta = "Hola Christian"
     else:
         respuesta = "No entiendo el mensaje"
 

@@ -31,6 +31,8 @@
             overflow:hidden;
         }
 
+        /* HEADER */
+
         .header{
             background:#ffffff;
             color:black;
@@ -44,6 +46,8 @@
         .header-info h2{
             font-size:18px;
         }
+
+        /* CHAT */
 
         .chat-box{
             flex:1;
@@ -82,6 +86,8 @@
             color:gray;
             margin-top:5px;
         }
+
+        /* INPUT */
 
         .input-area{
             background:#f0f2f5;
@@ -145,9 +151,10 @@
     <!-- CHAT -->
     <div class="chat-box" id="chat-box">
 
+        <!-- MENSAJE DE BIENVENIDA -->
         <div class="mensaje bot">
             ¡Hola, buen día!👋<br><br>
-            Gracias por comunicarte con Ñätho AquaGuard.<br><br>
+            Gracias por comunicarte con Ñätho AquaGuard, te atiende tu amigo Ñäthito y será un gusto proporcionarte mi ayuda.<br><br>
             ¿Cuál es tu nombre?
 
             <span class="hora" id="hora-bienvenida"></span>
@@ -175,9 +182,6 @@
 
 <script>
 
-let usuarios = [];
-let esperandoNombre = true;
-
 function obtenerHora(){
     let fecha = new Date();
 
@@ -186,6 +190,7 @@ function obtenerHora(){
         + fecha.getMinutes().toString().padStart(2,'0');
 }
 
+// poner hora en el mensaje de bienvenida
 window.onload = function(){
     document.getElementById("hora-bienvenida").innerText = obtenerHora();
 };
@@ -215,24 +220,7 @@ async function enviarMensaje(){
     input.value = "";
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // 🔥 REGISTRO DE USUARIOS (OPCIÓN A)
-    if (esperandoNombre) {
-
-        let nuevoUsuario = {
-            id: usuarios.length + 1,
-            nombre: texto
-        };
-
-        usuarios.push(nuevoUsuario);
-
-        console.log("Usuarios registrados:", usuarios);
-
-        esperandoNombre = false;
-
-        return;
-    }
-
-    // 🔄 FLASK (DESPUÉS DEL NOMBRE)
+    // ENVIAR AL SERVIDOR
     let respuesta = await fetch("/mensaje",{
         method:"POST",
         headers:{
@@ -245,6 +233,7 @@ async function enviarMensaje(){
 
     let datos = await respuesta.json();
 
+    // RESPUESTA BOT
     let mensajeBot = document.createElement("div");
     mensajeBot.className = "mensaje bot";
 
