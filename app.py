@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 reportes = []
 
-EXCEL_FILE = os.path.join(os.path.expanduser("~"), "Desktop", "reportes.xlsx")
+EXCEL_FILE = os.path.join(os.getcwd(), "reportes.xlsx")
 
 # 🧠 estado global (UNA sola conversación)
 paso = 0
