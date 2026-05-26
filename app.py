@@ -1,17 +1,17 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 import pandas as pd
 import os
 
 app = Flask(__name__)
-app.secret_key = "aquaguard_secret_key"
-
-# 🔥 IMPORTANTE: mantener sesión estable
-app.config["SESSION_PERMANENT"] = True
 
 reportes = []
 
 EXCEL_FILE = os.path.join(os.path.expanduser("~"), "Desktop", "reportes.xlsx")
+
+# 🧠 estado global (UNA sola conversación)
+paso = 0
+datos = {}
 
 
 @app.route("/")
@@ -19,12 +19,10 @@ def inicio():
     return render_template("index.html")
 
 
-# 📊 guardar en Excel
 def guardar_en_excel(nuevo_reporte):
 
     df_nuevo = pd.DataFrame([nuevo_reporte])
 
-    # si el archivo ya existe, se agrega
     if os.path.exists(EXCEL_FILE):
         df_existente = pd.read_excel(EXCEL_FILE)
         df_final = pd.concat([df_existente, df_nuevo], ignore_index=True)
@@ -37,18 +35,13 @@ def guardar_en_excel(nuevo_reporte):
 @app.route("/mensaje", methods=["POST"])
 def mensaje():
 
+    global paso, datos
+
     data = request.json
     texto = data.get("mensaje", "").strip().lower()
     gps = data.get("gps", None)
 
     hora = datetime.now().strftime("%H:%M")
-
-    # 🔥 FORZAR INICIO DE SESIÓN SI NO EXISTE
-    session.setdefault("paso", 0)
-    session.setdefault("datos", {})
-
-    paso = session.get("paso", 0)
-    datos = session.get("datos", {})
 
     respuesta = ""
 
@@ -56,17 +49,16 @@ def mensaje():
     # 0 - NOMBRE
     # ======================
     if paso == 0:
-        session["datos"] = {"hora_inicio": hora}
-        session["paso"] = 1
+        paso = 1
         respuesta = "👋 ¿Cuál es tu nombre?"
 
     # ======================
     # 1 - NOMBRE
     # ======================
     elif paso == 1:
+        datos = {}
         datos["nombre"] = texto
-        session["datos"] = datos
-        session["paso"] = 2
+        paso = 2
         respuesta = "📱 Escribe tu número telefónico"
 
     # ======================
@@ -74,8 +66,7 @@ def mensaje():
     # ======================
     elif paso == 2:
         datos["telefono"] = texto
-        session["datos"] = datos
-        session["paso"] = 3
+        paso = 3
         respuesta = "🚰 Describe el motivo del reporte"
 
     # ======================
@@ -83,8 +74,7 @@ def mensaje():
     # ======================
     elif paso == 3:
         datos["motivo"] = texto
-        session["datos"] = datos
-        session["paso"] = 4
+        paso = 4
         respuesta = "📍 ¿Permites usar tu ubicación GPS? (si / no)"
 
     # ======================
@@ -102,7 +92,7 @@ def mensaje():
         reportes.append(datos.copy())
         guardar_en_excel(datos.copy())
 
-        session["paso"] = 5
+        paso = 5
 
         respuesta = "✅ Reporte guardado. ¿Deseas hacer otro? (si / no)"
 
@@ -112,16 +102,19 @@ def mensaje():
     elif paso == 5:
 
         if "si" in texto:
-            session["paso"] = 0
-            session["datos"] = {}
-            respuesta = "👍 Perfecto, iniciemos otro reporte"
+            paso = 0
+            datos = {}
+            respuesta = "👍 Iniciemos un nuevo reporte"
         else:
-            session.clear()
+            paso = 99
             respuesta = "🙏 Gracias por usar Ñätho AquaGuard"
+
+    else:
+        respuesta = "La conversación ha finalizado. Recarga la página para iniciar de nuevo."
 
     return jsonify({"respuesta": respuesta})
 
-# 📊 ver reportes en JSON
+
 @app.route("/reportes")
 def ver_reportes():
     return jsonify(reportes)
