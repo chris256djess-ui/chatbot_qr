@@ -45,8 +45,7 @@ def mensaje():
 
             respuesta = (
                 "¡Hola! 👋\n\n"
-                "Bienvenido a Ñätho AquaGuard.\n\n"
-                "Por favor escribe tu nombre."
+                "Por favor, me puedes proporcionar tu nombre."
             )
 
         else:
@@ -66,7 +65,7 @@ def mensaje():
 
         respuesta = (
             f"Mucho gusto, {nombre_usuario} 😊\n\n"
-            "Ahora escribe tu número telefónico."
+            "Ahora brindame tu número telefónico."
         )
 
     # ---------------- TELEFONO ----------------
@@ -166,7 +165,7 @@ def mensaje():
             estado_usuario = "inicio"
 
             respuesta = (
-                "Gracias por utilizar Ñätho AquaGuard 💧\n\n"
+                "Gracias por utilizar el sistema de reportes de Ñätho AquaGuard 💧\n\n"
                 "Que tengas un excelente día."
             )
 

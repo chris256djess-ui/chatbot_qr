@@ -156,7 +156,8 @@
             ¡Hola, buen día!👋<br><br>
             Gracias por comunicarte con Ñätho AquaGuard, te atiende tu amigo Ñäthito 
             y será un gusto proporcionarte mi ayuda.<br><br>
-            Para iniciar con tu reporte, saludame👋😁
+            Te solicitare algunos datos para mantener registro de tu reporte, cuando estes listo, saludame!!!👋😁<br>
+
 
             <span class="hora" id="hora-bienvenida"></span>
         </div>
@@ -239,7 +240,7 @@ async function enviarMensaje(){
     mensajeBot.className = "mensaje bot";
 
     mensajeBot.innerHTML = `
-        ${datos.respuesta}
+         ${datos.respuesta.replace(/\n/g, "<br>")}
         <span class="hora">${obtenerHora()}</span>
     `;
 
