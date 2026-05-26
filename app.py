@@ -8,7 +8,7 @@ app.secret_key = "aquaguard_secret_key"
 
 reportes = []
 
-EXCEL_FILE = "reportes.xlsx"
+EXCEL_FILE = os.path.join(os.path.expanduser("~"), "Desktop", "reportes.xlsx")
 
 
 @app.route("/")
