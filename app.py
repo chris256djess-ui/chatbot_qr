@@ -5,18 +5,12 @@ import os
 
 app = Flask(__name__)
 
+EXCEL_FILE = "reportes.xlsx"
+
 reportes = []
 
-EXCEL_FILE = os.path.join(os.getcwd(), "reportes.xlsx")
-
-# 🧠 estado global (UNA sola conversación)
-paso = 0
+estado = 0
 datos = {}
-
-
-@app.route("/")
-def inicio():
-    return render_template("index.html")
 
 
 def guardar_en_excel(nuevo_reporte):
@@ -32,10 +26,15 @@ def guardar_en_excel(nuevo_reporte):
     df_final.to_excel(EXCEL_FILE, index=False)
 
 
+@app.route("/")
+def inicio():
+    return render_template("index.html")
+
+
 @app.route("/mensaje", methods=["POST"])
 def mensaje():
 
-    global paso, datos
+    global estado, datos
 
     data = request.json
     texto = data.get("mensaje", "").strip().lower()
@@ -45,42 +44,36 @@ def mensaje():
 
     respuesta = ""
 
-    # ======================
-    # 0 - NOMBRE
-    # ======================
-    if paso == 0:
-        paso = 1
+    # RESET automático si está en estado inválido
+    if estado not in [0,1,2,3,4,5]:
+        estado = 0
+        datos = {}
+
+    # 0
+    if estado == 0:
+        estado = 1
         respuesta = "👋 ¿Cuál es tu nombre?"
 
-    # ======================
-    # 1 - NOMBRE
-    # ======================
-    elif paso == 1:
-        datos = {}
+    # 1
+    elif estado == 1:
         datos["nombre"] = texto
-        paso = 2
-        respuesta = "📱 Escribe tu número telefónico"
+        estado = 2
+        respuesta = "📱 Escribe tu número"
 
-    # ======================
-    # 2 - TELÉFONO
-    # ======================
-    elif paso == 2:
+    # 2
+    elif estado == 2:
         datos["telefono"] = texto
-        paso = 3
-        respuesta = "🚰 Describe el motivo del reporte"
+        estado = 3
+        respuesta = "🚰 Motivo del reporte"
 
-    # ======================
-    # 3 - MOTIVO
-    # ======================
-    elif paso == 3:
+    # 3
+    elif estado == 3:
         datos["motivo"] = texto
-        paso = 4
-        respuesta = "📍 ¿Permites usar tu ubicación GPS? (si / no)"
+        estado = 4
+        respuesta = "📍 ¿Permites GPS? (si/no)"
 
-    # ======================
-    # 4 - GPS + GUARDADO
-    # ======================
-    elif paso == 4:
+    # 4
+    elif estado == 4:
 
         if "si" in texto:
             datos["gps"] = gps
@@ -92,25 +85,19 @@ def mensaje():
         reportes.append(datos.copy())
         guardar_en_excel(datos.copy())
 
-        paso = 5
+        estado = 5
+        respuesta = "✅ Guardado. ¿Otro reporte? (si/no)"
 
-        respuesta = "✅ Reporte guardado. ¿Deseas hacer otro? (si / no)"
-
-    # ======================
-    # 5 - REPETIR
-    # ======================
-    elif paso == 5:
+    # 5
+    elif estado == 5:
 
         if "si" in texto:
-            paso = 0
+            estado = 0
             datos = {}
-            respuesta = "👍 Iniciemos un nuevo reporte"
+            respuesta = "👍 Nuevo reporte"
         else:
-            paso = 99
-            respuesta = "🙏 Gracias por usar Ñätho AquaGuard"
-
-    else:
-        respuesta = "La conversación ha finalizado. Recarga la página para iniciar de nuevo."
+            estado = 99
+            respuesta = "🙏 Fin"
 
     return jsonify({"respuesta": respuesta})
 

@@ -197,32 +197,7 @@ function obtenerHora(){
 }
 
 
-// 📍 GPS (solo se envía si backend lo solicita)
-async function obtenerGPS(){
-
-    return new Promise((resolve)=>{
-
-        if(!navigator.geolocation){
-            resolve("No soportado");
-            return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            (pos)=>{
-                resolve({
-                    lat: pos.coords.latitude,
-                    lng: pos.coords.longitude
-                });
-            },
-            ()=>{
-                resolve("Denegado");
-            }
-        );
-    });
-}
-
-
-// 💬 agregar mensajes
+// 💬 agregar mensajes al chat
 function agregarMensaje(texto, tipo){
 
     let chatBox = document.getElementById("chat-box");
@@ -240,7 +215,7 @@ function agregarMensaje(texto, tipo){
 }
 
 
-// 🚀 enviar mensaje (FLUJO CORRECTO)
+// 🚀 enviar mensaje (SIMPLE Y ESTABLE)
 async function enviarMensaje(){
 
     let input = document.getElementById("mensaje");
@@ -248,14 +223,13 @@ async function enviarMensaje(){
 
     if(texto.trim() === "") return;
 
-    // mostrar usuario
+    // mostrar mensaje usuario
     agregarMensaje(texto, "usuario");
 
     input.value = "";
 
-    // 📍 IMPORTANTE:
-    // SOLO mandamos GPS si el backend lo necesita (lo decide el flujo)
-    let gps = await obtenerGPS();
+    // 📍 NO forzamos GPS (lo decide el backend si lo usa)
+    let gps = null;
 
     let respuesta = await fetch("/mensaje",{
 
