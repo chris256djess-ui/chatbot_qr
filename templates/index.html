@@ -157,7 +157,7 @@
 
         <div class="mensaje bot">
             !Hola, buen día!👋<br><br>Gracias por comunicarte con Ñätho AquaGuard, te atiende tu amigo Ñäthito y sera un gusto 
-            proporcionarte mi ayuda.<br><br>
+            proporcionarte mi ayuda.<br><br>Por favor, indicame cual es el motivo de su reporte.📝
 
             <span class="hora">
                 12:00
@@ -192,64 +192,73 @@ function obtenerHora(){
     let fecha = new Date();
 
     return fecha.getHours().toString().padStart(2,'0')
-        + ":" +
-        fecha.getMinutes().toString().padStart(2,'0');
+        + ":"
+        + fecha.getMinutes().toString().padStart(2,'0');
 }
 
-
-// 💬 agregar mensajes al chat
-function agregarMensaje(texto, tipo){
-
-    let chatBox = document.getElementById("chat-box");
-
-    let div = document.createElement("div");
-    div.className = "mensaje " + tipo;
-
-    div.innerHTML = `
-        ${texto}
-        <span class="hora">${obtenerHora()}</span>
-    `;
-
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-
-// 🚀 enviar mensaje (SIMPLE Y ESTABLE)
 async function enviarMensaje(){
 
     let input = document.getElementById("mensaje");
     let texto = input.value;
 
-    if(texto.trim() === "") return;
+    if(texto.trim() === ""){
+        return;
+    }
 
-    // mostrar mensaje usuario
-    agregarMensaje(texto, "usuario");
+    let chatBox = document.getElementById("chat-box");
+
+    // MENSAJE USUARIO
+
+    let mensajeUsuario = document.createElement("div");
+
+    mensajeUsuario.className = "mensaje usuario";
+
+    mensajeUsuario.innerHTML = `
+        ${texto}
+        <span class="hora">${obtenerHora()}</span>
+    `;
+
+    chatBox.appendChild(mensajeUsuario);
 
     input.value = "";
 
-    // 📍 NO forzamos GPS (lo decide el backend si lo usa)
-    let gps = null;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // ENVIAR AL SERVIDOR
 
     let respuesta = await fetch("/mensaje",{
 
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
         },
 
-        body: JSON.stringify({
-            mensaje: texto,
-            gps: gps
+        body:JSON.stringify({
+            mensaje:texto
         })
+
     });
 
-    let data = await respuesta.json();
+    let datos = await respuesta.json();
 
-    // respuesta bot
-    agregarMensaje(data.respuesta, "bot");
+    // RESPUESTA BOT
+
+    let mensajeBot = document.createElement("div");
+
+    mensajeBot.className = "mensaje bot";
+
+    mensajeBot.innerHTML = `
+        ${datos.respuesta}
+        <span class="hora">${obtenerHora()}</span>
+    `;
+
+    chatBox.appendChild(mensajeBot);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 </script>
+
 </body>
 </html>
