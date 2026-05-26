@@ -40,12 +40,14 @@ def mensaje():
 
     hora = datetime.now().strftime("%H:%M")
 
+    # 🔥 FORZAR INICIO DE SESIÓN SI NO EXISTE
     if "paso" not in session:
+        session.clear()
         session["paso"] = 0
         session["datos"] = {}
 
-    paso = session["paso"]
-    datos = session["datos"]
+    paso = session.get("paso", 0)
+    datos = session.get("datos", {})
 
     respuesta = ""
 
@@ -62,6 +64,7 @@ def mensaje():
     # ======================
     elif paso == 1:
         datos["nombre"] = texto
+        session["datos"] = datos
         session["paso"] = 2
         respuesta = "📱 Escribe tu número telefónico"
 
@@ -70,6 +73,7 @@ def mensaje():
     # ======================
     elif paso == 2:
         datos["telefono"] = texto
+        session["datos"] = datos
         session["paso"] = 3
         respuesta = "🚰 Describe el motivo del reporte"
 
@@ -78,6 +82,7 @@ def mensaje():
     # ======================
     elif paso == 3:
         datos["motivo"] = texto
+        session["datos"] = datos
         session["paso"] = 4
         respuesta = "📍 ¿Permites usar tu ubicación GPS? (si / no)"
 
@@ -93,15 +98,12 @@ def mensaje():
 
         datos["hora_reporte"] = hora
 
-        # guardar en memoria
         reportes.append(datos.copy())
-
-        # 💾 guardar en Excel
         guardar_en_excel(datos.copy())
 
         session["paso"] = 5
 
-        respuesta = "✅ Reporte guardado en sistema. ¿Deseas hacer otro? (si / no)"
+        respuesta = "✅ Reporte guardado. ¿Deseas hacer otro? (si / no)"
 
     # ======================
     # 5 - REPETIR
@@ -113,14 +115,10 @@ def mensaje():
             session["datos"] = {}
             respuesta = "👍 Perfecto, iniciemos otro reporte"
         else:
-            session["paso"] = 99
+            session.clear()
             respuesta = "🙏 Gracias por usar Ñätho AquaGuard"
 
-    else:
-        respuesta = "Recarga la página para iniciar nuevamente"
-
     return jsonify({"respuesta": respuesta})
-
 
 # 📊 ver reportes en JSON
 @app.route("/reportes")
