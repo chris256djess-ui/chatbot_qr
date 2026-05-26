@@ -6,6 +6,9 @@ import os
 app = Flask(__name__)
 app.secret_key = "aquaguard_secret_key"
 
+# 🔥 IMPORTANTE: mantener sesión estable
+app.config["SESSION_PERMANENT"] = True
+
 reportes = []
 
 EXCEL_FILE = os.path.join(os.path.expanduser("~"), "Desktop", "reportes.xlsx")
@@ -41,10 +44,8 @@ def mensaje():
     hora = datetime.now().strftime("%H:%M")
 
     # 🔥 FORZAR INICIO DE SESIÓN SI NO EXISTE
-    if "paso" not in session:
-        session.clear()
-        session["paso"] = 0
-        session["datos"] = {}
+    session.setdefault("paso", 0)
+    session.setdefault("datos", {})
 
     paso = session.get("paso", 0)
     datos = session.get("datos", {})
